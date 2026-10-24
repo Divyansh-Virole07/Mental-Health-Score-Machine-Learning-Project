@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Student Mental Health Score Predictor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="sky" id="page-sky" aria-hidden="true"></div>
+  <header class="hero">
+    <div class="sky sky-hero" id="hero-sky" aria-hidden="true"></div>
+    <div class="hero-inner">
+      <div>
+        <h1>How is social media use shaping student well-being?</h1>
+        <p>Describe a student’s habits and the model estimates a mental health score. Every control updates the picture of their day as you go.</p>
+      </div>
+      <svg class="pulse" viewBox="0 0 240 70" aria-hidden="true">
+        <path d="M0 38 H60 L74 8 L94 62 L110 28 L122 38 H240" pathLength="100"/>
+      </svg>
+    </div>
+  </header>
+
+  <main class="layout">
+    <form id="predict-form" class="form" novalidate>
+
+      <div class="form-top">
+        <div class="progress-text"><strong id="answered-count">0</strong> of 12 answered</div>
+        <div class="progress"><span id="progress-bar"></span></div>
+        <button type="button" id="sample-btn" class="btn-quiet small">Fill sample</button>
+      </div>
+
+      <section class="card">
+        <h2>About the student</h2>
+        <div class="grid">
+          <div class="field">
+            <label for="age">Age</label>
+            <div class="stepper">
+              <button type="button" class="step" data-target="age" data-delta="-1" data-start="20" aria-label="Decrease age">−</button>
+              <input type="number" id="age" name="age" min="10" max="100" step="1" placeholder="20" required>
+              <button type="button" class="step" data-target="age" data-delta="1" data-start="20" aria-label="Increase age">+</button>
+            </div>
+            <span class="error" data-error-for="age"></span>
+          </div>
+          <div class="field">
+            <label id="gender-label">Gender</label>
+            <div class="seg" role="radiogroup" aria-labelledby="gender-label">
+              <label><input type="radio" name="gender" value="Male"><span>Male</span></label>
+              <label><input type="radio" name="gender" value="Female"><span>Female</span></label>
+            </div>
+            <span class="error" data-error-for="gender"></span>
+          </div>
+          <div class="field">
+            <label for="country">Country</label>
+            <input type="text" id="country" name="country" list="country-list" placeholder="Start typing, e.g. India" autocomplete="off" required>
+            <datalist id="country-list"></datalist>
+            <small class="hint">Pick a suggestion or type any country</small>
+            <span class="error" data-error-for="country"></span>
+          </div>
+          <div class="field">
+            <label id="level-label">Academic level</label>
+            <div class="seg" role="radiogroup" aria-labelledby="level-label">
+              <label><input type="radio" name="academic_level" value="High School"><span>High School</span></label>
+              <label><input type="radio" name="academic_level" value="Undergraduate"><span>Undergrad</span></label>
+              <label><input type="radio" name="academic_level" value="Graduate"><span>Graduate</span></label>
+            </div>
+            <span class="error" data-error-for="academic_level"></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Social media use</h2>
+        <div class="field">
+          <label id="platform-label">Most used platform</label>
+          <div class="chips" id="platform-chips" role="radiogroup" aria-labelledby="platform-label"></div>
+          <span class="error" data-error-for="most_used_platform"></span>
+        </div>
+        <div class="field spaced">
+          <label id="purpose-label">Main purpose</label>
+          <div class="seg" role="radiogroup" aria-labelledby="purpose-label">
+            <label><input type="radio" name="purpose_of_use" value="Networking"><span>Networking</span></label>
+            <label><input type="radio" name="purpose_of_use" value="Education"><span>Education</span></label>
+            <label><input type="radio" name="purpose_of_use" value="Entertainment"><span>Entertainment</span></label>
+            <label><input type="radio" name="purpose_of_use" value="News"><span>News</span></label>
+          </div>
+          <span class="error" data-error-for="purpose_of_use"></span>
+        </div>
+        <div class="grid spaced">
+          <div class="field slider-field">
+            <div class="slider-head">
+              <label for="avg_daily_usage_hours">Daily usage (hours)</label>
+              <input type="number" id="avg_daily_usage_hours" name="avg_daily_usage_hours" min="0" max="24" step="0.1" placeholder="0" required>
+            </div>
+            <input type="range" min="0" max="24" step="0.5" value="0" data-sync="avg_daily_usage_hours" aria-label="Daily usage slider">
+            <span class="error" data-error-for="avg_daily_usage_hours"></span>
+          </div>
+          <div class="field">
+            <label for="daily_unloacks">Daily phone unlocks</label>
+            <div class="stepper">
+              <button type="button" class="step" data-target="daily_unloacks" data-delta="-1" data-start="10" aria-label="Fewer unlocks">−</button>
+              <input type="number" id="daily_unloacks" name="daily_unloacks" min="0" max="24" step="1" placeholder="10" required>
+              <button type="button" class="step" data-target="daily_unloacks" data-delta="1" data-start="10" aria-label="More unlocks">+</button>
+            </div>
+            <small class="hint">Whole number, 0 to 24</small>
+            <span class="error" data-error-for="daily_unloacks"></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Daily routine</h2>
+        <div class="grid">
+          <div class="field slider-field">
+            <div class="slider-head">
+              <label for="sleep_hours_per_night">Sleep (hours per night)</label>
+              <input type="number" id="sleep_hours_per_night" name="sleep_hours_per_night" min="0" max="24" step="0.1" placeholder="0" required>
+            </div>
+            <input type="range" min="0" max="24" step="0.5" value="0" data-sync="sleep_hours_per_night" aria-label="Sleep slider">
+            <span class="error" data-error-for="sleep_hours_per_night"></span>
+          </div>
+          <div class="field slider-field">
+            <div class="slider-head">
+              <label for="study_hours">Study (hours per day)</label>
+              <input type="number" id="study_hours" name="study_hours" min="0" max="24" step="0.1" placeholder="0" required>
+            </div>
+            <input type="range" min="0" max="24" step="0.5" value="0" data-sync="study_hours" aria-label="Study slider">
+            <span class="error" data-error-for="study_hours"></span>
+          </div>
+          <div class="field slider-field">
+            <div class="slider-head">
+              <label for="physical_sctivity_hours">Physical activity (hours per day)</label>
+              <input type="number" id="physical_sctivity_hours" name="physical_sctivity_hours" min="0" max="24" step="0.1" placeholder="0" required>
+            </div>
+            <input type="range" min="0" max="24" step="0.5" value="0" data-sync="physical_sctivity_hours" aria-label="Physical activity slider">
+            <span class="error" data-error-for="physical_sctivity_hours"></span>
+          </div>
+          <div class="field">
+            <label id="stress-label">Stress level</label>
+            <div class="seg stress" role="radiogroup" aria-labelledby="stress-label">
+              <label><input type="radio" name="stress_level" value="Low"><span class="s-low">Low</span></label>
+              <label><input type="radio" name="stress_level" value="Medium"><span class="s-medium">Medium</span></label>
+              <label><input type="radio" name="stress_level" value="High"><span class="s-high">High</span></label>
+              <label><input type="radio" name="stress_level" value="Very High"><span class="s-vhigh">Very High</span></label>
+            </div>
+            <span class="error" data-error-for="stress_level"></span>
+          </div>
+        </div>
+
+        <div class="day-live">
+          <h3>A day in 24 hours</h3>
+          <div id="day-budget"></div>
+        </div>
+      </section>
+
+      <div class="actions">
+        <button type="submit" id="submit-btn" class="btn-primary">
+          <span class="btn-label">Predict score</span>
+          <span class="btn-spinner" aria-hidden="true"></span>
+        </button>
+        <button type="reset" class="btn-quiet">Clear form</button>
+      </div>
+    </form>
+
+    <aside class="result-panel" aria-live="polite">
+      <div id="state-empty" class="state center">
+        <svg class="ghost-gauge" viewBox="0 0 200 118" aria-hidden="true">
+          <path d="M 20 100 A 80 80 0 0 1 180 100" pathLength="100"/>
+        </svg>
+        <h2>Your result will appear here</h2>
+        <p id="empty-hint">Answer all 12 questions, then choose Predict score.</p>
+      </div>
+
+      <div id="state-loading" class="state center" hidden>
+        <div class="loader" aria-hidden="true"><span></span><span></span><span></span></div>
+        <h2>Analysing habits…</h2>
+        <p>Waiting for the model to respond.</p>
+      </div>
+
+      <div id="state-error" class="state error-box" hidden role="alert">
+        <h2 id="error-title">Something went wrong</h2>
+        <p id="error-message"></p>
+        <ul id="error-list"></ul>
+        <button type="button" id="retry-btn" class="btn-ghost">Dismiss</button>
+      </div>
+
+      <div id="state-result" class="state" hidden>
+        <h2>Predicted mental health score</h2>
+        <div class="gauge">
+          <svg viewBox="0 0 200 118" role="img" aria-label="Score gauge">
+            <path class="gauge-track" d="M 20 100 A 80 80 0 0 1 180 100" pathLength="100"/>
+            <path class="gauge-fill" id="gauge-fill" d="M 20 100 A 80 80 0 0 1 180 100" pathLength="100"/>
+          </svg>
+          <div class="gauge-value"><span id="score-number">0</span><span class="gauge-max">/ 10</span></div>
+        </div>
+        <div class="center">
+          <p id="score-band" class="score-band"></p>
+          <span id="score-delta" class="delta" hidden></span>
+          <p id="score-note" class="score-note"></p>
+        </div>
+
+        <section class="block">
+          <h3>Your day in 24 hours</h3>
+          <div id="result-day"></div>
+        </section>
+
+        <section class="block">
+          <h3>Habit notes</h3>
+          <ul id="insights" class="insights"></ul>
+          <small>General guidance based on the values you entered, not output of the model.</small>
+        </section>
+
+        <section class="block">
+          <h3>Profile</h3>
+          <div id="profile-chips" class="chips-row"></div>
+        </section>
+
+        <section class="block" id="history-block" hidden>
+          <h3>Recent predictions</h3>
+          <ol id="history" class="history"></ol>
+        </section>
+
+        <div class="result-actions">
+          <button type="button" id="copy-btn" class="btn-ghost">Copy summary</button>
+          <button type="button" id="edit-btn" class="btn-ghost">Adjust inputs</button>
+        </div>
+        <p class="disclaimer">This is a statistical estimate from a machine learning model, not a diagnosis. If you are worried about someone’s well-being, talk to a qualified professional.</p>
+      </div>
+    </aside>
+  </main>
+
+  <div id="toast" class="toast" role="status" hidden></div>
+  <script src="script.js"></script>
+</body>
+</html>
